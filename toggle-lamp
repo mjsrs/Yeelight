@@ -1,0 +1,25 @@
+#!/bin/bash
+lamp_ip=192.168.31.243
+lamp_port=55443
+lamp_name="Escritorio"
+title="Toggle Lamp"
+message="The lamp $lamp_name was toggled."
+#ls /System/Library/Sounds (available sounds on macOS)
+sound="Frog"
+
+#toggle lamp using netcat command
+(echo '{"id":1,"method":"toggle","params":[]}') | nc -cv -w 2 $lamp_ip $lamp_port
+
+#if running macOS show a notification
+if [ $(uname) != 'Darwin' ];then
+    exit
+fi
+osascript -e 'display notification "'"$message"'" with title "'"$title"'" sound name "'"$sound"'"'
+#useful when calling from Spotlight
+set -e
+osascript <<EOF & exit
+tell application "Terminal" 
+    ignoring application responses
+        quit
+    end ignoring
+end tell
